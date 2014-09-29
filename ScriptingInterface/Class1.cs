@@ -4,14 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nebulas
+namespace ScriptingInterface
 {
-    namespace Common
+    public class Scriptable
     {
-        
-        
-        
-        
-        
     }
 }

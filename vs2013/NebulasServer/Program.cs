@@ -18,7 +18,7 @@ namespace Nebulas
         [STAThread]
         static void Main()
         {
-            using (var instance = new NebulasServer.NebulasServer())
+            using (var instance = new NebulasServer.GameServer())
                 instance.Run();
         }
     }

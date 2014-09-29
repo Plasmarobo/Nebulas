@@ -8,30 +8,54 @@ using Lidgren.Network;
 
 namespace NebulasServer
 {
-    public class NebulasClient : NetConnection
+    public class GameUser
     {
         String mClientAuth;
         String mClientName;
+        NetConnection mLink;
+
+        public GameUser(NetConnection link)
+        {
+            mLink = link;
+            mClientAuth = "Error_Auth";
+            mClientName = "Error_Name";
+        }
+
+        public GameUser(String name, String auth, NetConnection link)
+        {
+            mClientAuth = auth;
+            mClientName = name;
+            mLink = link;
+        }
+
+        public NetConnection Link()
+        {
+            return mLink;
+        }
+
     }
-    public class NebulasServer : IDisposable
+    public class GameServer : IDisposable
     {
         static String mNetAppName = "Nebulas";
         NetPeerConfiguration mConfig;
         NetServer mServer;
-        List<NebulasClient> mClients;
+        List<GameUser> mClients;
         Nebulas.Events.EventStream mEventMaster;
         DateTime mCurrentTimestamp;
         
-        public NebulasServer()
+        public GameServer()
         {
             mConfig = new NetPeerConfiguration(mNetAppName);
-            mConfig.Port = 87578;
-            mClients = new List<NebulasClient>();
+            mConfig.Port = 8578;
+            mClients = new List<GameUser>();
             mServer = new NetServer(mConfig);
             mServer.Start();
             
         }
-        public void Run();
+        public void Run()
+        {
+
+        }
 
 
         public void Listen()
@@ -58,8 +82,9 @@ namespace NebulasServer
         {
             NetOutgoingMessage sendMsg = mServer.CreateMessage();
             sendMsg.Write("Hello");
+            
             sendMsg.Write(42);
-            mServer.SendMessage(sendMsg, mClients[0], NetDeliveryMethod.ReliableOrdered);
+            mServer.SendMessage(sendMsg, mClients[0].Link(), NetDeliveryMethod.ReliableOrdered);
         }
         public void AuthenticateClient()
         {
@@ -67,6 +92,11 @@ namespace NebulasServer
         }
         public void Thing()
         {
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 }

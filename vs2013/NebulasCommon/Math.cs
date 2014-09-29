@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace Nebulas
 {
-    namespace Common
+    namespace Math
     {
-        
-        
-        
-        
-        
+        public class Vec3
+        {
+            Double x;
+            Double y;
+            Double z;
+        }
     }
 }

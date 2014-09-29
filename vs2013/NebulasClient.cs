@@ -14,12 +14,12 @@ namespace Nebulas
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Nebulas : Game
+    public class NebulasClient : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public Nebulas()
+        public NebulasClient()
             : base()
         {
             graphics = new GraphicsDeviceManager(this);

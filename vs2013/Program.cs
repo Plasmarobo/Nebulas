@@ -18,7 +18,7 @@ namespace Nebulas
         [STAThread]
         static void Main()
         {
-            using (var game = new Nebulas())
+            using (var game = new NebulasClient())
                 game.Run();
         }
     }

@@ -1,0 +1,1 @@
+﻿test_variable = 42
