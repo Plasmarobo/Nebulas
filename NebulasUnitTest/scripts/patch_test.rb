@@ -1,1 +1,1 @@
-﻿patch_test2_variable = 72
+﻿self.patch_test2_variable = 72

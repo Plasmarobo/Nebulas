@@ -1,0 +1,10 @@
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasServer\bin\Debug\NebulasServer.exe.config
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasServer\bin\Debug\NebulasServer.exe
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasServer\bin\Debug\NebulasServer.pdb
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasServer\bin\Debug\Lidgren.Network.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasServer\bin\Debug\NebulasCommon.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasServer\bin\Debug\NebulasCommon.pdb
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasServer\bin\Debug\Lidgren.Network.pdb
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasServer\obj\Debug\NebulasServer.csprojResolveAssemblyReference.cache
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasServer\obj\Debug\NebulasServer.exe
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasServer\obj\Debug\NebulasServer.pdb

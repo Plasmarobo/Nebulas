@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.IO;
@@ -19,21 +20,29 @@ namespace Nebulas
             protected ScriptEngine mEngine;
             protected ScriptScope mScope;
             protected Dictionary<Int32, CompiledCode> mBinaries;
-            //protected Dictionary<Int32, ScriptSource> mCache;
+            protected List<String> mPatches;
             public const String TargetVarName = "this";
             public const String BinaryDir = "compiled";
-            CompiledCode mContextPatch;
+            public String mPath;
+            //CompiledCode mContextPatch;
 
 
             public void Initialize()
             {
+                mPath = "./scripts";
                 mRuntime = Ruby.CreateRuntime();
                 mEngine = mRuntime.GetEngine("ruby");
                 
                 mScope = mEngine.CreateScope();
-                mContextPatch = null;
+                //mContextPatch = null;
+                mPatches = new List<String>();
                 mBinaries = new Dictionary<Int32, CompiledCode>();
-                //mCache = new Dictionary<Int32,ScriptSource>();
+            }
+
+            public void Initialize(String path)
+            {
+                Initialize();
+                mPath = path;
             }
 
             public void DumpCurrentScope()
@@ -45,7 +54,6 @@ namespace Nebulas
                 }
             }
             
-            // Iron Ruby doesn't support comp
             public CompiledCode Compile(string source)
             {
                 Int32 hash = source.GetHashCode();
@@ -56,16 +64,17 @@ namespace Nebulas
                 }
                 else
                 {
-                    //Engage Compiler
-                    ScriptSource result; 
-                    if ((source.Length > 3) && (source.Substring(source.Length-3) == ".rb"))
+                    ScriptSource result;
+                    if ((source.Length > 3) && (source.Substring(source.Length - 3) == ".rb"))
                     {
-                        result = mEngine.CreateScriptSourceFromFile(source, Encoding.UTF8, SourceCodeKind.File);
+                        source = File.ReadAllText(mPath + source);
                     }
-                    else
+                    foreach(String patch in mPatches)
                     {
-                        result =  mEngine.CreateScriptSourceFromString(source, SourceCodeKind.Statements);
+                        source = patch + source;
                     }
+                    result =  mEngine.CreateScriptSourceFromString(source, SourceCodeKind.Statements);
+                    
                     binary = result.Compile();
                     mBinaries.Add(hash, binary);
                     return binary;
@@ -77,43 +86,9 @@ namespace Nebulas
                 CompiledCode bin = Compile(UnrollProperties(evt));
                 return bin;
             }
-            /*
-            public ScriptSource Compile(String source)
-            {
-                Int32 hash = source.GetHashCode();
-                ScriptSource src;
-                if(mCache.TryGetValue(hash, out src))
-                {
-                    return src;
-                }
-                else
-                {
-                    //Pesudocompilation
-                    ScriptSource result;
-                    if ((source.Length > 3) && (source.Substring(source.Length - 3) == ".rb"))
-                    {
-                        result = mEngine.CreateScriptSourceFromFile(source, Encoding.UTF8, SourceCodeKind.File);
-                    }
-                    else
-                    {
-                        result = mEngine.CreateScriptSourceFromString(source, SourceCodeKind.Statements);
-                    }
-                    mCache.Add(hash, result);
-                    return result;
-                }
-            }
-
-            protected ScriptSource CompilePatch(Nebulas.Events.Event evt)
-            {
-                return Compile(UnrollProperties(evt));
-            }*/
-
+            
             public void Exec(string script)
             {
-                if (mContextPatch != null)
-                {
-                    mContextPatch.Execute(mScope);
-                }
                 Compile(script).Execute(mScope);
             }
 
@@ -121,10 +96,6 @@ namespace Nebulas
             {
                 try
                 {
-                    if (mContextPatch != null)
-                    {
-                        mContextPatch.Execute(mScope);
-                    }
                     Compile(scriptContents).Execute(mScope);
                 }
                 catch(SyntaxErrorException e)
@@ -140,24 +111,18 @@ namespace Nebulas
 
             public void ExecFile(string scriptFile)
             {
-                if (mContextPatch != null)
-                {
-                    mContextPatch.Execute(mScope);
-                }
-                
                 Compile(scriptFile).Execute(mScope);
             }
 
             public void SetContext(Nebulas.Events.Event evt)
             {
                 mScope = mEngine.CreateScope();
-                SetVariable("this", evt.mProperties);
+                SetVariable("event", evt.mProperties);
             }
 
             public Boolean ExtractContext(Nebulas.Events.Event evt)
             {
-                mContextPatch = null;
-                dynamic thisvar = GetVariable("this");
+                dynamic thisvar = GetVariable("event");
                 if (thisvar != null)
                 {
                     evt.UpdateProperties((Dictionary<string, string>)thisvar);
@@ -193,9 +158,52 @@ namespace Nebulas
               
             }
 
+            public String GetLocal(string key)
+            {
+                dynamic value;
+                value = mEngine.Execute(key, mScope);
+                return (String)value;
+            }
+            
+            public void SetLocal(string key, string value)
+            {
+                mEngine.Execute(key + " = \"" + value + "\"", mScope);
+            }
+
             public void SetVariable(string key, dynamic val)
             {
                 mScope.SetVariable(key, val);
+            }
+
+            public void ExportDictionary(string key, Dictionary<String, String> dict)
+            {
+                //Build patch for dictionary
+                String patch = key + "= { ";
+                foreach(KeyValuePair<String, String> kvp in dict)
+                {
+                    patch += "\"" + kvp.Key + "\" => \"" + kvp.Value + "\",";
+                }
+                patch += "}\n";
+                mPatches.Add(patch);
+            }
+
+            public void ClearPatches()
+            {
+                mPatches.Clear();
+            }
+
+            public Dictionary<String, String> ImportDictionary(string key)
+            {
+                Dictionary<String, String> import = new Dictionary<String,String>();
+                dynamic hash; 
+                if(mScope.TryGetVariable(key, out hash))
+                {
+                    Hashtable hashtable = (Hashtable)hash;
+                    return hashtable.Cast<DictionaryEntry>()
+                        .ToDictionary(kvp => (String)kvp.Key, kvp => (String)kvp.Value);
+                }
+                
+                return import;
             }
 
             public dynamic GetVariable(string key)
@@ -272,25 +280,11 @@ namespace Nebulas
 
             public String SanityTest(String before, String after)
             {
-                /*ScriptScope scope = mEngine.CreateScope();
-                String code = "puts self.msg\nself.msg = '" + after + ".to_clr_string'\n";
-                ScriptSource script = mEngine.CreateScriptSourceFromString(code, SourceCodeKind.Statements);
-                SetVariable("msg", before);
-                script.Execute(scope);
-                String result = GetVariable("msg");
-                return result;
-                 */
-                //String before = "hello world";
-                //String after = "changed";
-
-                //ScriptRuntime mRuntime = Ruby.CreateRuntime();
-                //ScriptEngine mEngine = mRuntime.GetEngine("ruby");
-                ScriptScope scope = mEngine.CreateScope();
                 String code = "self.msg = '" + after + "'.to_clr_string";
                 ScriptSource script = mEngine.CreateScriptSourceFromString(code, SourceCodeKind.Statements);
                 SetVariable("msg", before);
                 script.Execute(mScope);
-                String result = scope.GetVariable("msg");
+                String result = GetVariable("msg");
                 return result;
             }
             

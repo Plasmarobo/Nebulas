@@ -1,4 +1,4 @@
-﻿#region Using Statements
+#region Using Statements
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace Nebulas
 {
-#if WINDOWS || LINUX
     /// <summary>
     /// The main class.
     /// </summary>
@@ -18,9 +17,8 @@ namespace Nebulas
         [STAThread]
         static void Main()
         {
-            using (var game = new NebulasClient())
+            using (var game = new Game1())
                 game.Run();
         }
     }
-#endif
 }

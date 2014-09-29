@@ -1,0 +1,13 @@
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\bin\Debug\NebulasRubyCore.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\bin\Debug\NebulasRubyCore.pdb
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\bin\Debug\NebulasCommon.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\bin\Debug\NebulasCommon.pdb
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\obj\Debug\NebulasRubyCore.csprojResolveAssemblyReference.cache
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\obj\Debug\NebulasRubyCore.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\obj\Debug\NebulasRubyCore.pdb
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\bin\Debug\IronRuby.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\bin\Debug\IronRuby.Libraries.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\bin\Debug\IronRuby.Libraries.Yaml.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\bin\Debug\Microsoft.Dynamic.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\bin\Debug\Microsoft.Scripting.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasRubyCore\bin\Debug\System.Numerics.dll

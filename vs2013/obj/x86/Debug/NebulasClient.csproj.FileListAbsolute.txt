@@ -1,0 +1,13 @@
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\bin\WindowsGL\Debug\Nebulas.exe.config
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\bin\WindowsGL\Debug\Nebulas.exe
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\bin\WindowsGL\Debug\Nebulas.pdb
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\bin\WindowsGL\Debug\MonoGame.Framework.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\bin\WindowsGL\Debug\NebulasCommon.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\bin\WindowsGL\Debug\OpenTK.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\bin\WindowsGL\Debug\Tao.Sdl.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\bin\WindowsGL\Debug\NebulasCommon.pdb
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\obj\x86\Debug\NebulasClient.csprojResolveAssemblyReference.cache
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\obj\x86\Debug\Nebulas.exe
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\obj\x86\Debug\Nebulas.pdb
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\bin\WindowsGL\Debug\Lidgren.Network.dll
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\bin\WindowsGL\Debug\Lidgren.Network.pdb
