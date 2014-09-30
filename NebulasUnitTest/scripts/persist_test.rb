@@ -1,1 +1,0 @@
-﻿self.persist_test_variable = 6

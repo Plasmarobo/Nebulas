@@ -1,7 +1,6 @@
-C:\Users\Austen\Documents\GitHub\Nebulas\NebulasNetworkFoundation\bin\Debug\NebulasNetworkFoundation.dll
-C:\Users\Austen\Documents\GitHub\Nebulas\NebulasNetworkFoundation\bin\Debug\NebulasNetworkFoundation.pdb
-C:\Users\Austen\Documents\GitHub\Nebulas\NebulasNetworkFoundation\bin\Debug\Lidgren.Network.dll
-C:\Users\Austen\Documents\GitHub\Nebulas\NebulasNetworkFoundation\bin\Debug\Lidgren.Network.pdb
-C:\Users\Austen\Documents\GitHub\Nebulas\NebulasNetworkFoundation\obj\Debug\NebulasNetworkFoundation.dll
-C:\Users\Austen\Documents\GitHub\Nebulas\NebulasNetworkFoundation\obj\Debug\NebulasNetworkFoundation.pdb
-C:\Users\Austen\Documents\GitHub\Nebulas\NebulasNetworkFoundation\obj\Debug\NebulasNetworkFoundation.csprojResolveAssemblyReference.cache
+C:\Users\Austen\GitHub\Nebulas\NebulasNetworkFoundation\bin\Debug\NebulasNetworkFoundation.dll
+C:\Users\Austen\GitHub\Nebulas\NebulasNetworkFoundation\bin\Debug\NebulasNetworkFoundation.pdb
+C:\Users\Austen\GitHub\Nebulas\NebulasNetworkFoundation\bin\Debug\Lidgren.Network.dll
+C:\Users\Austen\GitHub\Nebulas\NebulasNetworkFoundation\obj\Debug\NebulasNetworkFoundation.dll
+C:\Users\Austen\GitHub\Nebulas\NebulasNetworkFoundation\obj\Debug\NebulasNetworkFoundation.pdb
+C:\Users\Austen\GitHub\Nebulas\NebulasNetworkFoundation\obj\Debug\NebulasNetworkFoundation.csprojResolveAssemblyReference.cache

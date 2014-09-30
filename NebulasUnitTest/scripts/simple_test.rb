@@ -1,1 +1,1 @@
-﻿self.test_variable = 42
+﻿test_variable = 42

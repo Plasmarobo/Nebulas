@@ -1,9 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
-using IronRuby;
+
 
 namespace NebulasUnitTest
 {
@@ -15,7 +13,7 @@ namespace NebulasUnitTest
         public ScriptTests()
         {
             mRubyCore = new Nebulas.Scripting.RubyCore();
-            mRubyCore.Initialize("C:/Users/Austen/Documents/GitHub/Nebulas/NebulasUnitTest/scripts/");
+            mRubyCore.Initialize();
         }
         
         [TestMethod]
@@ -103,9 +101,9 @@ namespace NebulasUnitTest
             Assert.AreEqual(null, mRubyCore.GetLocal("local_var"));
             mRubyCore.SetLocal("local_var", "five");
             Assert.AreEqual("five", mRubyCore.GetLocal("local_var"));
-            mRubyCore.Exec("local_var = \"six\"");
+            mRubyCore.Run("local_var = \"six\"");
             Assert.AreEqual("six", mRubyCore.GetLocal("local_var"));
-            mRubyCore.Exec("secret_var = \"5\"");
+            mRubyCore.Run("secret_var = \"5\"");
             Assert.AreEqual("5", mRubyCore.GetLocal("secret_var"));
         }
 
@@ -117,8 +115,8 @@ namespace NebulasUnitTest
             data.Add("num", "72");
             mRubyCore.ExportDictionary("dict", data);
 
-            mRubyCore.Exec("dict[\"str\"] = \"Two\"");
-            mRubyCore.Exec("dict[\"num\"] = 42");
+            mRubyCore.Run("dict[\"str\"] = \"Two\"");
+            mRubyCore.Run("dict[\"num\"] = 42");
 
             Dictionary<String, String> result = mRubyCore.ImportDictionary("dict");
             String str;
