@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using System.Threading;
 using Nebulas.Network;
+using System.Diagnostics;
 
 namespace NebulasUnitTest
 {
@@ -21,8 +22,8 @@ namespace NebulasUnitTest
         public NetworkTest()
         {
             
-            mClient = new Client("127.0.0.1");
-            mServer = new Server();
+            //mClient = new Client("127.0.0.1");
+            //mServer = new Server();
         }
 
         private TestContext testContextInstance;
@@ -64,6 +65,36 @@ namespace NebulasUnitTest
         // public void MyTestCleanup() { }
         //
         #endregion
+
+        protected Process StartProgram(String target)
+        {
+            ProcessStartInfo start = new ProcessStartInfo();
+            // Enter in the command line arguments, everything you would enter after the executable name itself
+            //start.Arguments = arguments;
+            // Enter the executable to run, including the complete path
+            start.FileName = target;
+            // Do you want to show a console window?
+            start.WindowStyle = ProcessWindowStyle.Normal;
+            start.CreateNoWindow = false;
+            return Process.Start(start);
+        }
+
+        [TestMethod]
+        public void ServerTest()
+        {
+            mServer = new Server();
+            Process p = StartProgram("NebulasDummyClient.exe");
+            Assert.IsTrue(mServer.Test());
+            p.WaitForExit();
+        }
+        [TestMethod]
+        public void ClientTest()
+        {
+            mClient = new Client("127.0.0.1");
+            Process p = StartProgram("NebulasDummyServer.exe");
+            mClient.Test();
+            p.WaitForExit();
+        }
 
 
         

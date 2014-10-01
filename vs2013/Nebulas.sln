@@ -1,33 +1,35 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasClient", "NebulasClient.csproj", "{9FA7EBE2-042D-4158-87DB-B417880204AA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8249D84D-0750-4FFD-BD43-894344E60A2C} = {8249D84D-0750-4FFD-BD43-894344E60A2C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasServer", "NebulasServer\NebulasServer.csproj", "{F3AC6044-8C5D-4697-AF3B-BC2A2EC9992C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasServer", "NebulasServer.csproj", "{F3AC6044-8C5D-4697-AF3B-BC2A2EC9992C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8249D84D-0750-4FFD-BD43-894344E60A2C} = {8249D84D-0750-4FFD-BD43-894344E60A2C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasCommon", "NebulasCommon\NebulasCommon.csproj", "{8249D84D-0750-4FFD-BD43-894344E60A2C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasCommon", "NebulasCommon.csproj", "{8249D84D-0750-4FFD-BD43-894344E60A2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasUnitTest", "..\NebulasUnitTest\NebulasUnitTest.csproj", "{BB0A289D-50B1-4754-B0B3-89D5E8E2DECC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasUnitTest", "NebulasUnitTest.csproj", "{BB0A289D-50B1-4754-B0B3-89D5E8E2DECC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8249D84D-0750-4FFD-BD43-894344E60A2C} = {8249D84D-0750-4FFD-BD43-894344E60A2C}
 		{1903DCB6-CA0D-4472-BF37-983321B8CA11} = {1903DCB6-CA0D-4472-BF37-983321B8CA11}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasNetworkFoundation", "..\NebulasNetworkFoundation\NebulasNetworkFoundation.csproj", "{1903DCB6-CA0D-4472-BF37-983321B8CA11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasNetworkFoundation", "NebulasNetworkFoundation.csproj", "{1903DCB6-CA0D-4472-BF37-983321B8CA11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasDummyServer", "NebulasDummyServer\NebulasDummyServer.csproj", "{C247E548-5657-49E7-8379-8444CFB12CD1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasDummyServer", "NebulasDummyServer.csproj", "{C247E548-5657-49E7-8379-8444CFB12CD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasDummyClient", "NebulasDummyClient\NebulasDummyClient.csproj", "{BC2F8F68-E22D-4C49-9585-C995D41A6141}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasDummyClient", "NebulasDummyClient.csproj", "{BC2F8F68-E22D-4C49-9585-C995D41A6141}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasRubyCore", "NebulasRubyCore\NebulasRubyCore.csproj", "{6AEDB151-201F-4A0F-B13C-7A3FD6737FC8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasRubyCore", "NebulasRubyCore.csproj", "{6AEDB151-201F-4A0F-B13C-7A3FD6737FC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NebulasConfig", "NebulasConfig.csproj", "{861E6563-C022-422B-9A33-F880C9A73EAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -120,6 +122,16 @@ Global
 		{6AEDB151-201F-4A0F-B13C-7A3FD6737FC8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{6AEDB151-201F-4A0F-B13C-7A3FD6737FC8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6AEDB151-201F-4A0F-B13C-7A3FD6737FC8}.Release|x86.ActiveCfg = Release|Any CPU
+		{861E6563-C022-422B-9A33-F880C9A73EAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{861E6563-C022-422B-9A33-F880C9A73EAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{861E6563-C022-422B-9A33-F880C9A73EAE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{861E6563-C022-422B-9A33-F880C9A73EAE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{861E6563-C022-422B-9A33-F880C9A73EAE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{861E6563-C022-422B-9A33-F880C9A73EAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{861E6563-C022-422B-9A33-F880C9A73EAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{861E6563-C022-422B-9A33-F880C9A73EAE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{861E6563-C022-422B-9A33-F880C9A73EAE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{861E6563-C022-422B-9A33-F880C9A73EAE}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

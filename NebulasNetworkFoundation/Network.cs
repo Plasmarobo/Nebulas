@@ -25,6 +25,7 @@ namespace Nebulas
         {
             // Client Object
             NetClient mClient;
+            Boolean mCanStart;
             NetPeerConfiguration mConfig;
             string mServerIP;
             // Create timer that tells client, when to send update
@@ -51,8 +52,7 @@ namespace Nebulas
             {
                 // Create new outgoing message
                 NetOutgoingMessage outmsg = mClient.CreateMessage();
-
-
+                
                 //LoginPacket lp = new LoginPacket("Katu");
 
                 // Start client
@@ -71,25 +71,28 @@ namespace Nebulas
                 Console.WriteLine("Client Started");
 
                 // Set timer to tick every 50ms
-                update = new System.Timers.Timer(50);
+                //update = new System.Timers.Timer(50);
 
                 // When time has elapsed ( 50ms in this case ), call "update_Elapsed" funtion
-                update.Elapsed += new System.Timers.ElapsedEventHandler(update_Elapsed);
+                //update.Elapsed += new System.Timers.ElapsedEventHandler(update_Elapsed);
 
                 // Funtion that waits for connection approval info from server
                 WaitForStartingInfo();
                 SendEcho();
                 // Start the timer
-                update.Start();
+                //update.Start();
 
                 // While..running
                 while (IsRunning)
                 {
                     // Just loop this like madman
                     //GetInputAndSendItToServer();
+                    CheckServerMessages();
                     System.Threading.Thread.Yield();
 
                 }
+                SendQuit();
+
             }
 
             /// <summary>
@@ -110,13 +113,12 @@ namespace Nebulas
             private void WaitForStartingInfo()
             {
                 // When this is set to true, we are approved and ready to go
-                bool CanStart = false;
-
+               
                 // New incomgin message
                 NetIncomingMessage inc;
 
                 // Loop untill we are approved
-                while (!CanStart)
+                while (!mCanStart)
                 {
 
                     // If new messages arrived
@@ -125,34 +127,24 @@ namespace Nebulas
                         // Switch based on the message types
                         switch (inc.MessageType)
                         {
-                            case NetIncomingMessageType.StatusChanged:
-                                NetConnectionStatus status = (NetConnectionStatus)inc.ReadByte();
-                                string reason = inc.ReadString();
-                                Console.WriteLine("New status: " + status + " (" + reason + ")");
-
-                                if (status == NetConnectionStatus.Connected)
-                                {
-                                    CanStart = true;
-                                }
-                                else 
-                                {
-                                    //Catastrophic failure
-                                    return;
-                                }
-                                break;
+                            
                             
                             // All manually sent messages are type of "Data"
                             case NetIncomingMessageType.Data:
 
                                 // Read the first byte
                                 // This way we can separate packets from each others
-                                if (inc.ReadString() == "echo")
+                                String tmp = inc.ReadString();
+                                if (tmp == "echo")
                                 {
-
+                                    SendQuit();
                                     Console.WriteLine("Echo Received");
+                                }else if (tmp == "quit")
+                                {
+                                    IsRunning = false;
+                                    return;
                                 }
                                 break;
-
                             default:
                                 // Should not happen and if happens, don't care
                                 Console.WriteLine(inc.ReadString() + " Strange message");
@@ -179,22 +171,52 @@ namespace Nebulas
                 // If its WorldState, read all the characters to list
                 while ((inc = mClient.ReadMessage()) != null)
                 {
-                    if (inc.MessageType == NetIncomingMessageType.Data)
+                    switch (inc.MessageType)
                     {
-                        /*if (inc.ReadByte() == (byte)PacketTypes.WORLDSTATE)
-                        {
-                            Console.WriteLine("World State uppaus");
-                            GameStateList.Clear();
-                            int jii = 0;
-                            jii = inc.ReadInt32();
-                            for (int i = 0; i < jii; i++)
+                        case NetIncomingMessageType.StatusChanged:
+                            NetConnectionStatus status = (NetConnectionStatus)inc.ReadByte();
+                            string reason = inc.ReadString();
+                            Console.WriteLine("New status: " + status + " (" + reason + ")");
+
+                            if (status == NetConnectionStatus.Connected)
                             {
-                                Character ch = new Character();
-                                inc.ReadAllProperties(ch);
-                                GameStateList.Add(ch);
+                                mCanStart = true;
                             }
-                        }*/
+                            else
+                            {
+                                //Catastrophic failure
+                                return;
+                            }
+                            break;
+                        case NetIncomingMessageType.Data:
+                            {
+                                String tmp = inc.ReadString();
+                                if (tmp == "echo")
+                                {
+                                    SendQuit();
+                                }
+                                else if (tmp == "quit")
+                                {
+                                    IsRunning = false;
+                                    return;
+                                }
+                                /*if (inc.ReadByte() == (byte)PacketTypes.WORLDSTATE)
+                                {
+                                    Console.WriteLine("World State uppaus");
+                                    GameStateList.Clear();
+                                    int jii = 0;
+                                    jii = inc.ReadInt32();
+                                    for (int i = 0; i < jii; i++)
+                                    {
+                                        Character ch = new Character();
+                                        inc.ReadAllProperties(ch);
+                                        GameStateList.Add(ch);
+                                    }
+                                }*/
+                            }
+                            break;
                     }
+                    mClient.Recycle(inc);
                 }
             }
 
@@ -210,6 +232,17 @@ namespace Nebulas
                 mClient.SendMessage(outmsg, NetDeliveryMethod.ReliableOrdered);
 
 
+            }
+
+            public void SendQuit()
+            {
+                NetOutgoingMessage outmsg = mClient.CreateMessage();
+
+                // Write byte = Set "MOVE" as packet type
+                outmsg.Write("quit");
+
+                // Send it to server
+                mClient.SendMessage(outmsg, NetDeliveryMethod.ReliableOrdered);
             }
 
 
@@ -229,21 +262,18 @@ namespace Nebulas
 
                 mConfig.MaximumConnections = 200;
                 mConfig.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
+                mConfig.EnableMessageType(NetIncomingMessageType.Data);
                 mServer = new NetServer(mConfig);
                 mServer.Start();
             }
 
-            public void Test()
+
+            public bool Test()
             {
                 
                 // Object that can be used to store and read messages
                 NetIncomingMessage inc;
-
-                // Check time
-                DateTime time = DateTime.Now;
-
-                // Create timespan of 30ms
-                TimeSpan timetopass = new TimeSpan(0, 0, 0, 0, 30);
+                Boolean echo_rec = false;
 
                 // Write to con..
                 Console.WriteLine("Waiting for new connections and updateing world state to current ones");
@@ -251,6 +281,9 @@ namespace Nebulas
                 // Main loop
                 // This kind of loop can't be made in XNA. In there, its basically same, but without while
                 // Or maybe it could be while(new messages)
+
+                //10 seconds
+                
                 while (true)
                 {
                     // Server.ReadMessage() Returns new messages, that have not yet been read.
@@ -298,7 +331,17 @@ namespace Nebulas
 
                                 // Read first byte
                                 //if (inc.ReadByte() == (byte)PacketTypes.MOVE)
+                                String tmp = inc.ReadString();
+                                if (tmp == "quit")
                                 {
+                                    NetOutgoingMessage outmsg = mServer.CreateMessage();
+                                    outmsg.Write("quit");
+                                    mServer.SendMessage(outmsg, mServer.Connections, NetDeliveryMethod.ReliableOrdered, 0);
+                                    return echo_rec;
+                                }
+                                else if (tmp == "echo")
+                                {
+                                    echo_rec = true;
                                     Console.WriteLine("Sending Echo");
                                     NetOutgoingMessage outmsg = mServer.CreateMessage();
                                     outmsg.Write("echo");
@@ -329,47 +372,10 @@ namespace Nebulas
                                 break;
                         }
                         mServer.Recycle(inc);
-                    } // If New messages
-
-                    // if 30ms has passed
-                    /*if ((time + timetopass) < DateTime.Now)
-                    {
-                        // If there is even 1 client
-                        if (mServer.ConnectionsCount != 0)
-                        {
-                            // Create new message
-                            NetOutgoingMessage outmsg = mServer.CreateMessage();
-
-                            // Write byte
-                            outmsg.Write((byte)PacketTypes.WORLDSTATE);
-
-                            // Write Int
-                            outmsg.Write(GameWorldState.Count);
-
-                            // Iterate throught all the players in game
-                            foreach (Character ch2 in GameWorldState)
-                            {
-
-                                // Write all properties of character, to the message
-                                outmsg.WriteAllProperties(ch2);
-                            }
-
-                            // Message contains
-                            // byte = Type
-                            // Int = Player count
-                            // Character obj * Player count
-
-                            // Send messsage to clients ( All connections, in reliable order, channel 0)
-                            Server.SendMessage(outmsg, Server.Connections, NetDeliveryMethod.ReliableOrdered, 0);
-                        }
-                        // Update current time
-                        time = DateTime.Now;
-                    }*/
-
-                    // While loops run as fast as your computer lets. While(true) can lock your computer up. Even 1ms sleep, lets other programs have piece of your CPU time
-                    //System.Threading.Thread.Sleep(1);
+                    } 
                     System.Threading.Thread.Yield();
                 }
+
             }
         }
     }

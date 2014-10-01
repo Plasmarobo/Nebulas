@@ -1,5 +1,0 @@
-C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasCommon\bin\Debug\NebulasCommon.dll
-C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasCommon\bin\Debug\NebulasCommon.pdb
-C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasCommon\obj\Debug\NebulasCommon.dll
-C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasCommon\obj\Debug\NebulasCommon.pdb
-C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\NebulasCommon\obj\Debug\NebulasCommon.csprojResolveAssemblyReference.cache
