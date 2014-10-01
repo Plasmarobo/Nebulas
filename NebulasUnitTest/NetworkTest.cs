@@ -16,9 +16,6 @@ namespace NebulasUnitTest
     public class NetworkTest
     {
 
-        Nebulas.Network.Client mClient;
-        Nebulas.Network.Server mServer;
-
         public NetworkTest()
         {
             
@@ -82,15 +79,16 @@ namespace NebulasUnitTest
         [TestMethod]
         public void ServerTest()
         {
-            mServer = new Server();
+            Nebulas.Network.Server mServer = new Server();
             Process p = StartProgram("NebulasDummyClient.exe");
             Assert.IsTrue(mServer.Test());
+            mServer.Stop("Test End");
             p.WaitForExit();
         }
         [TestMethod]
         public void ClientTest()
         {
-            mClient = new Client("127.0.0.1");
+            Nebulas.Network.Client mClient = new Client("127.0.0.1");
             Process p = StartProgram("NebulasDummyServer.exe");
             mClient.Test();
             p.WaitForExit();

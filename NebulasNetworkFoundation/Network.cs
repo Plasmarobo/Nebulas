@@ -115,43 +115,14 @@ namespace Nebulas
                 // When this is set to true, we are approved and ready to go
                
                 // New incomgin message
-                NetIncomingMessage inc;
+                
 
                 // Loop untill we are approved
                 while (!mCanStart)
                 {
 
-                    // If new messages arrived
-                    if ((inc = mClient.ReadMessage()) != null)
-                    {
-                        // Switch based on the message types
-                        switch (inc.MessageType)
-                        {
-                            
-                            
-                            // All manually sent messages are type of "Data"
-                            case NetIncomingMessageType.Data:
-
-                                // Read the first byte
-                                // This way we can separate packets from each others
-                                String tmp = inc.ReadString();
-                                if (tmp == "echo")
-                                {
-                                    SendQuit();
-                                    Console.WriteLine("Echo Received");
-                                }else if (tmp == "quit")
-                                {
-                                    IsRunning = false;
-                                    return;
-                                }
-                                break;
-                            default:
-                                // Should not happen and if happens, don't care
-                                Console.WriteLine(inc.ReadString() + " Strange message");
-                                break;
-                        }
-                        mClient.Recycle(inc);
-                    }
+                   CheckServerMessages();
+                    
                 }
             }
 
@@ -182,9 +153,9 @@ namespace Nebulas
                             {
                                 mCanStart = true;
                             }
-                            else
+                            else if (status == NetConnectionStatus.Disconnected)
                             {
-                                //Catastrophic failure
+                                IsRunning = false;
                                 return;
                             }
                             break;
@@ -267,6 +238,10 @@ namespace Nebulas
                 mServer.Start();
             }
 
+            public void Stop(String reason = "Unknown reason")
+            {
+                mServer.Shutdown(reason);
+            }
 
             public bool Test()
             {
@@ -283,8 +258,8 @@ namespace Nebulas
                 // Or maybe it could be while(new messages)
 
                 //10 seconds
-                
-                while (true)
+                Boolean running = true;
+                while (running)
                 {
                     // Server.ReadMessage() Returns new messages, that have not yet been read.
                     // If "inc" is null -> ReadMessage returned null -> Its null, so dont do this :)
@@ -337,7 +312,7 @@ namespace Nebulas
                                     NetOutgoingMessage outmsg = mServer.CreateMessage();
                                     outmsg.Write("quit");
                                     mServer.SendMessage(outmsg, mServer.Connections, NetDeliveryMethod.ReliableOrdered, 0);
-                                    return echo_rec;
+                                    running = false;
                                 }
                                 else if (tmp == "echo")
                                 {
@@ -375,7 +350,8 @@ namespace Nebulas
                     } 
                     System.Threading.Thread.Yield();
                 }
-
+                Stop("Test End");
+                return echo_rec;
             }
         }
     }

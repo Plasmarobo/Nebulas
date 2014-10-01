@@ -89,7 +89,7 @@ namespace NebulasUnitTest
             Assert.AreEqual(null, mRubyCore.GetAsInteger("persist_test_variable"));
             mRubyCore.Exec("self.persist_test_variable = 2");
             Assert.AreEqual(2, mRubyCore.GetAsInteger("persist_test_variable"));
-            mRubyCore.Exec("self.persist_test_variable = 4");
+            mRubyCore.Exec("self.persist_test_variable += 2");
             Assert.AreEqual(4, mRubyCore.GetAsInteger("persist_test_variable"));
             mRubyCore.Exec("persist_test.rb");
             Assert.AreEqual(6, mRubyCore.GetAsInteger("persist_test_variable"));
