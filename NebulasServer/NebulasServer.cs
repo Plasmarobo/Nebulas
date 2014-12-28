@@ -50,7 +50,6 @@ namespace NebulasServer
             mClients = new List<GameUser>();
             mServer = new NetServer(mConfig);
             mServer.Start();
-            
         }
         public void Run()
         {

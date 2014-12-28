@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.GamerServices;
+
 #endregion
 
 namespace Nebulas
@@ -18,12 +19,16 @@ namespace Nebulas
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
+        Dictionary<String, Texture2D> sprites;
+        Scene scene;
+        Camera camera;
         public NebulasClient()
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            scene = new Scene();
+            camera = new Camera();
         }
 
         /// <summary>
@@ -35,7 +40,6 @@ namespace Nebulas
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -47,8 +51,9 @@ namespace Nebulas
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            
             // TODO: use this.Content to load your game content here
+            sprites["rocket"] = this.Content.Load<Texture2D>("TerranRocket");
         }
 
         /// <summary>
@@ -58,6 +63,7 @@ namespace Nebulas
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+            this.Content.Unload();
         }
 
         /// <summary>
@@ -71,7 +77,7 @@ namespace Nebulas
                 Exit();
 
             // TODO: Add your update logic here
-
+            scene.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -82,10 +88,14 @@ namespace Nebulas
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            spriteBatch.Begin();
             // TODO: Add your drawing code here
-
+            scene.Draw(spriteBatch, gameTime);
+            //spriteBatch.Draw(rocket, new Vector2(200,200), new Rectangle(0,0,128,128), Color.White, angle, new Vector2(64,64), 1.0f, SpriteEffects.None, 1);
+            spriteBatch.End();
             base.Draw(gameTime);
         }
+
+        
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using Lidgren.Network;
 
 namespace Nebulas
@@ -29,7 +30,6 @@ namespace Nebulas
             NetPeerConfiguration mConfig;
             string mServerIP;
             // Create timer that tells client, when to send update
-            System.Timers.Timer update;
 
             // Indicates if program is running
             bool IsRunning = true;
@@ -48,7 +48,11 @@ namespace Nebulas
                 mClient = new NetClient(mConfig);
             }
 
-            public void Test()
+            public void Destroy()
+            {
+                mClient.Shutdown("Client shutdown");
+            }
+            public bool Test()
             {
                 // Create new outgoing message
                 NetOutgoingMessage outmsg = mClient.CreateMessage();
@@ -78,12 +82,17 @@ namespace Nebulas
 
                 // Funtion that waits for connection approval info from server
                 WaitForStartingInfo();
+                if (!mCanStart)
+                {
+                    return false;
+                }
                 SendEcho();
                 // Start the timer
                 //update.Start();
 
                 // While..running
-                while (IsRunning)
+                DateTime end = DateTime.UtcNow.AddSeconds(90);
+                while (IsRunning && (DateTime.UtcNow < end))
                 {
                     // Just loop this like madman
                     //GetInputAndSendItToServer();
@@ -91,7 +100,14 @@ namespace Nebulas
                     System.Threading.Thread.Yield();
 
                 }
-                SendQuit();
+                if(!IsRunning)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
 
             }
 
@@ -114,44 +130,13 @@ namespace Nebulas
             {
                 // When this is set to true, we are approved and ready to go
                
-                // New incomgin message
-                NetIncomingMessage inc;
-
+                DateTime timeout = DateTime.UtcNow.AddSeconds(10);
                 // Loop untill we are approved
-                while (!mCanStart)
+                while (!mCanStart && (timeout > DateTime.UtcNow))
                 {
 
-                    // If new messages arrived
-                    if ((inc = mClient.ReadMessage()) != null)
-                    {
-                        // Switch based on the message types
-                        switch (inc.MessageType)
-                        {
-                            
-                            
-                            // All manually sent messages are type of "Data"
-                            case NetIncomingMessageType.Data:
-
-                                // Read the first byte
-                                // This way we can separate packets from each others
-                                String tmp = inc.ReadString();
-                                if (tmp == "echo")
-                                {
-                                    SendQuit();
-                                    Console.WriteLine("Echo Received");
-                                }else if (tmp == "quit")
-                                {
-                                    IsRunning = false;
-                                    return;
-                                }
-                                break;
-                            default:
-                                // Should not happen and if happens, don't care
-                                Console.WriteLine(inc.ReadString() + " Strange message");
-                                break;
-                        }
-                        mClient.Recycle(inc);
-                    }
+                    CheckServerMessages();
+                    
                 }
             }
 
@@ -193,6 +178,7 @@ namespace Nebulas
                                 String tmp = inc.ReadString();
                                 if (tmp == "echo")
                                 {
+                                    Console.Write("Echo Recieved");
                                     SendQuit();
                                 }
                                 else if (tmp == "quit")
@@ -230,8 +216,6 @@ namespace Nebulas
 
                 // Send it to server
                 mClient.SendMessage(outmsg, NetDeliveryMethod.ReliableOrdered);
-
-
             }
 
             public void SendQuit()
@@ -243,6 +227,8 @@ namespace Nebulas
 
                 // Send it to server
                 mClient.SendMessage(outmsg, NetDeliveryMethod.ReliableOrdered);
+
+                IsRunning = false;
             }
 
 
@@ -267,6 +253,10 @@ namespace Nebulas
                 mServer.Start();
             }
 
+            public void Destroy()
+            {
+                mServer.Shutdown("Server is going down NOW");
+            }
 
             public bool Test()
             {
@@ -283,8 +273,9 @@ namespace Nebulas
                 // Or maybe it could be while(new messages)
 
                 //10 seconds
+                DateTime end = DateTime.UtcNow.AddSeconds(90);
                 
-                while (true)
+                while (true && (end > DateTime.UtcNow))
                 {
                     // Server.ReadMessage() Returns new messages, that have not yet been read.
                     // If "inc" is null -> ReadMessage returned null -> Its null, so dont do this :)
@@ -360,14 +351,21 @@ namespace Nebulas
 
                                 // NOTE: Disconnecting and Disconnected are not instant unless client is shutdown with disconnect()
                                 Console.WriteLine(inc.SenderConnection.ToString() + " status changed. " + (NetConnectionStatus)inc.SenderConnection.Status);
-                                if (inc.SenderConnection.Status == NetConnectionStatus.Disconnected || inc.SenderConnection.Status == NetConnectionStatus.Disconnecting)
+                                if(inc.SenderConnection.Status == NetConnectionStatus.RespondedAwaitingApproval)
                                 {
-
+                                    inc.SenderConnection.Approve();
+                                    NetOutgoingMessage msg = mServer.CreateMessage();
+                                    msg.Write("Connection Accepted");
+                                    inc.SenderConnection.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
+                                }
+                                else if (inc.SenderConnection.Status == NetConnectionStatus.Disconnected || inc.SenderConnection.Status == NetConnectionStatus.Disconnecting)
+                                {
+                                    inc.SenderConnection.Disconnect("Goodbye");
+                                    return true;
                                 }
                                 break;
                             default:
-                                // As i statet previously, theres few other kind of messages also, but i dont cover those in this example
-                                // Uncommenting next line, informs you, when ever some other kind of message is received
+                                
                                 Console.WriteLine("Unhandled Message");
                                 break;
                         }
@@ -375,7 +373,7 @@ namespace Nebulas
                     } 
                     System.Threading.Thread.Yield();
                 }
-
+                return false;
             }
         }
     }

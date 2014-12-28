@@ -24,6 +24,7 @@ namespace Nebulas
             Vec3 mPositionDamping;
             Vec3 mVelocityDamping;
             Vec3 mAccelerationDamping;
+
         }
 
         public class Effect : Prop

@@ -38,6 +38,18 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IronRuby, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\IronRuby\bin\IronRuby.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\IronRuby\bin\IronRuby.Libraries.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries.Yaml, Version=1.1.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\IronRuby\bin\IronRuby.Libraries.Yaml.dll</HintPath>
+    </Reference>
     <Reference Include="Lidgren.Network">
       <HintPath>..\libs\Lidgren\Release\Lidgren.Network.dll</HintPath>
     </Reference>
@@ -71,6 +83,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="NebulasDummyClient.csproj">
+      <Project>{bc2f8f68-e22d-4c49-9585-c995d41a6141}</Project>
+      <Name>NebulasDummyClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="NebulasDummyServer.csproj">
+      <Project>{c247e548-5657-49e7-8379-8444cfb12cd1}</Project>
+      <Name>NebulasDummyServer</Name>
+    </ProjectReference>
     <ProjectReference Include="NebulasNetworkFoundation.csproj">
       <Project>{1903dcb6-ca0d-4472-bf37-983321b8ca11}</Project>
       <Name>NebulasNetworkFoundation</Name>

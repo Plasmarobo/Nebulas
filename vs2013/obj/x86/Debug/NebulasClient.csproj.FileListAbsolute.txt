@@ -4,3 +4,4 @@ C:\Users\Austen\GitHub\Nebulas\bin\Nebulas.pdb
 C:\Users\Austen\GitHub\Nebulas\vs2013\obj\x86\Debug\NebulasClient.csprojResolveAssemblyReference.cache
 C:\Users\Austen\GitHub\Nebulas\vs2013\obj\x86\Debug\Nebulas.exe
 C:\Users\Austen\GitHub\Nebulas\vs2013\obj\x86\Debug\Nebulas.pdb
+C:\Users\Austen\GitHub\Nebulas\bin\Content\TerranRocket.xnb

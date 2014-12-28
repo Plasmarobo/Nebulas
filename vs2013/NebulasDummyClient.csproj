@@ -55,6 +55,7 @@
     <ProjectReference Include="NebulasNetworkFoundation.csproj">
       <Project>{1903dcb6-ca0d-4472-bf37-983321b8ca11}</Project>
       <Name>NebulasNetworkFoundation</Name>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

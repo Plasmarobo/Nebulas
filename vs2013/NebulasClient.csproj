@@ -56,9 +56,6 @@
     </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\NebulasClient\Game1.cs">
-      <Link>Game1.cs</Link>
-    </Compile>
     <Compile Include="..\NebulasClient\NebulasClient.cs">
       <Link>NebulasClient.cs</Link>
     </Compile>
@@ -115,9 +112,7 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="../NebulasClient/app.config" />
     <None Include="../NebulasClient/packages.config" />
@@ -152,6 +147,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NebulasAssets\NebulasAssets\NebulasAssets.csproj">
+      <Project>{0b34445c-a27f-4715-9bd1-6a7135937efb}</Project>
+      <Name>NebulasAssets</Name>
+    </ProjectReference>
     <ProjectReference Include="NebulasCommon.csproj">
       <Project>{8249d84d-0750-4ffd-bd43-894344e60a2c}</Project>
       <Name>NebulasCommon</Name>
@@ -164,6 +163,7 @@
     <Content Include="..\NebulasClient\SDL.dll">
       <Link>SDL.dll</Link>
     </Content>
+    <Content Include="Content\TerranRocket.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\MonoGame.Binaries.3.2.0\build\net40\MonoGame.Binaries.targets" Condition="Exists('packages\MonoGame.Binaries.3.2.0\build\net40\MonoGame.Binaries.targets')" />
