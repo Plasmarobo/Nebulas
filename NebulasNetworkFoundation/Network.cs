@@ -167,9 +167,9 @@ namespace Nebulas
                             {
                                 mCanStart = true;
                             }
-                            else
+                            else if (status == NetConnectionStatus.Disconnected)
                             {
-                                //Catastrophic failure
+                                IsRunning = false;
                                 return;
                             }
                             break;
@@ -274,7 +274,7 @@ namespace Nebulas
 
                 //10 seconds
                 DateTime end = DateTime.UtcNow.AddSeconds(90);
-                
+
                 while (true && (end > DateTime.UtcNow))
                 {
                     // Server.ReadMessage() Returns new messages, that have not yet been read.
@@ -328,7 +328,7 @@ namespace Nebulas
                                     NetOutgoingMessage outmsg = mServer.CreateMessage();
                                     outmsg.Write("quit");
                                     mServer.SendMessage(outmsg, mServer.Connections, NetDeliveryMethod.ReliableOrdered, 0);
-                                    return echo_rec;
+                                    running = false;
                                 }
                                 else if (tmp == "echo")
                                 {
@@ -374,6 +374,7 @@ namespace Nebulas
                     System.Threading.Thread.Yield();
                 }
                 return false;
+                return echo_rec;
             }
         }
     }

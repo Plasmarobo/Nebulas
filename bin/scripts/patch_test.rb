@@ -1,0 +1,1 @@
+self.patch_test2_variable = 72

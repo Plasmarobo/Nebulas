@@ -4,4 +4,13 @@ C:\Users\Austen\GitHub\Nebulas\bin\Nebulas.pdb
 C:\Users\Austen\GitHub\Nebulas\vs2013\obj\x86\Debug\NebulasClient.csprojResolveAssemblyReference.cache
 C:\Users\Austen\GitHub\Nebulas\vs2013\obj\x86\Debug\Nebulas.exe
 C:\Users\Austen\GitHub\Nebulas\vs2013\obj\x86\Debug\Nebulas.pdb
+<<<<<<< HEAD
 C:\Users\Austen\GitHub\Nebulas\bin\Content\TerranRocket.xnb
+=======
+C:\Users\Austen\Documents\GitHub\Nebulas\bin\Nebulas.exe.config
+C:\Users\Austen\Documents\GitHub\Nebulas\bin\Nebulas.exe
+C:\Users\Austen\Documents\GitHub\Nebulas\bin\Nebulas.pdb
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\obj\x86\Debug\NebulasClient.csprojResolveAssemblyReference.cache
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\obj\x86\Debug\Nebulas.exe
+C:\Users\Austen\Documents\GitHub\Nebulas\vs2013\obj\x86\Debug\Nebulas.pdb
+>>>>>>> origin/master
