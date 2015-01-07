@@ -10,9 +10,11 @@ namespace Nebulas
 {
     namespace Objects
     {
+        
         public class Prop : EventListener
         {
             //A part can have multiple parents
+            static Int32 mNextId = 0;
             Int32 mObjectId; //Unique to universe object
             String mResourceId; //Use to load image resource client side
             Prop[] mParent;
@@ -25,6 +27,15 @@ namespace Nebulas
             Vec3 mVelocityDamping;
             Vec3 mAccelerationDamping;
 
+            public Prop()
+            {
+                mObjectId = mNextId++;
+            }
+
+            public Int32 GetHandle()
+            {
+                return mObjectId;
+            }
         }
 
         public class Effect : Prop

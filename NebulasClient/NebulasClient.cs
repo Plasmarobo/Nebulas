@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.GamerServices;
 
+
 #endregion
 
 namespace Nebulas
@@ -21,15 +22,21 @@ namespace Nebulas
         SpriteBatch spriteBatch;
         Dictionary<String, Texture2D> sprites;
         Scene scene;
-        Camera camera;
+        Menu connectionMenu;
+        Boolean connected;
+        Nebulas.Events.EventStream eventManager;
         public NebulasClient()
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            scene = new Scene();
-            camera = new Camera();
+            scene = null;
+            connectionMenu = new Menu();
+            connected = false;
+            eventManager = new Nebulas.Events.EventStream();
+            //Basic Event manager must handle UP DOWN ENTER and Entering 0-9 and .
         }
+
 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -39,7 +46,7 @@ namespace Nebulas
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            // TODO : Load sounds or something
             base.Initialize();
         }
 
@@ -77,7 +84,15 @@ namespace Nebulas
                 Exit();
 
             // TODO: Add your update logic here
-            scene.Update(gameTime);
+            //scene.Update(gameTime);
+            if(connected.Equals(true))
+            {
+                eventManager.DispatchEvents();
+            }
+            else
+            {
+
+            }
             base.Update(gameTime);
         }
 
@@ -87,10 +102,17 @@ namespace Nebulas
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
             // TODO: Add your drawing code here
-            scene.Draw(spriteBatch, gameTime);
+            if (scene != null)
+            {
+                scene.Draw(spriteBatch, gameTime);
+            }
+            else
+            {
+                connectionMenu.Draw(spriteBatch, gameTime);
+            }
             //spriteBatch.Draw(rocket, new Vector2(200,200), new Rectangle(0,0,128,128), Color.White, angle, new Vector2(64,64), 1.0f, SpriteEffects.None, 1);
             spriteBatch.End();
             base.Draw(gameTime);

@@ -155,6 +155,10 @@
       <Project>{8249d84d-0750-4ffd-bd43-894344e60a2c}</Project>
       <Name>NebulasCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="NebulasNetworkFoundation.csproj">
+      <Project>{1903dcb6-ca0d-4472-bf37-983321b8ca11}</Project>
+      <Name>NebulasNetworkFoundation</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\NebulasClient\Icon.ico">
