@@ -1,0 +1,407 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Timers;
+using Lidgren.Network;
+
+namespace Nebulas
+{
+    namespace Network
+    {
+
+        enum PacketTypes
+        {
+            LOGIN,
+        }
+        
+        public class Identifiers
+        {
+            public static String Application = "Nebulas";
+            public static Int16 Port = 8998;
+        }
+
+        public class Client
+        {
+            // Client Object
+            NetClient mClient;
+            Boolean mCanStart;
+            NetPeerConfiguration mConfig;
+            string mServerIP;
+            // Create timer that tells client, when to send update
+
+            // Indicates if program is running
+            bool IsRunning = true;
+
+            public Client(string ip)
+            {
+                mServerIP = ip;
+                mConfig = new NetPeerConfiguration(Nebulas.Network.Identifiers.Application);
+                mClient = new NetClient(mConfig);
+            }
+
+            public Client(System.Net.IPAddress ip)
+            {
+                mServerIP = ip.ToString();
+                mConfig = new NetPeerConfiguration(Nebulas.Network.Identifiers.Application);
+                mClient = new NetClient(mConfig);
+            }
+
+            public void Destroy()
+            {
+                mClient.Shutdown("Client shutdown");
+            }
+            public bool Test()
+            {
+                // Create new outgoing message
+                NetOutgoingMessage outmsg = mClient.CreateMessage();
+                
+                //LoginPacket lp = new LoginPacket("Katu");
+
+                // Start client
+                mClient.Start();
+
+                // Write byte ( first byte informs server about the message type ) ( This way we know, what kind of variables to read )
+                outmsg.Write((byte)PacketTypes.LOGIN);
+
+                // Write String "Name" . Not used, but just showing how to do it
+                outmsg.Write("USERNAME");
+
+                // Connect client, to ip previously requested from user 
+                mClient.Connect(mServerIP, Nebulas.Network.Identifiers.Port, outmsg);
+
+
+                Console.WriteLine("Client Started");
+
+                // Set timer to tick every 50ms
+                //update = new System.Timers.Timer(50);
+
+                // When time has elapsed ( 50ms in this case ), call "update_Elapsed" funtion
+                //update.Elapsed += new System.Timers.ElapsedEventHandler(update_Elapsed);
+
+                // Funtion that waits for connection approval info from server
+                WaitForStartingInfo();
+                if (!mCanStart)
+                {
+                    return false;
+                }
+                SendEcho();
+                // Start the timer
+                //update.Start();
+
+                // While..running
+                DateTime end = DateTime.UtcNow.AddSeconds(90);
+                while (IsRunning && (DateTime.UtcNow < end))
+                {
+                    // Just loop this like madman
+                    //GetInputAndSendItToServer();
+                    CheckServerMessages();
+                    System.Threading.Thread.Yield();
+
+                }
+                if(!IsRunning)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+
+            /// <summary>
+            /// Every 50ms this is fired
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            private void update_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+            {
+                // Check if server sent new messages
+                CheckServerMessages();
+
+                // Draw the world
+                //DrawGameState();
+            }
+
+            // Before main looping starts, we loop here and wait for approval message
+            private void WaitForStartingInfo()
+            {
+                // When this is set to true, we are approved and ready to go
+               
+<<<<<<< HEAD
+                DateTime timeout = DateTime.UtcNow.AddSeconds(10);
+=======
+                // New incomgin message
+                
+
+>>>>>>> origin/master
+                // Loop untill we are approved
+                while (!mCanStart && (timeout > DateTime.UtcNow))
+                {
+
+<<<<<<< HEAD
+                    CheckServerMessages();
+=======
+                   CheckServerMessages();
+>>>>>>> origin/master
+                    
+                }
+            }
+
+
+            /// <summary>
+            /// Check for new incoming messages from server
+            /// </summary>
+            private void CheckServerMessages()
+            {
+                // Create new incoming message holder
+                NetIncomingMessage inc;
+
+                // While theres new messages
+                //
+                // THIS is exactly the same as in WaitForStartingInfo() function
+                // Check if its Data message
+                // If its WorldState, read all the characters to list
+                while ((inc = mClient.ReadMessage()) != null)
+                {
+                    switch (inc.MessageType)
+                    {
+                        case NetIncomingMessageType.StatusChanged:
+                            NetConnectionStatus status = (NetConnectionStatus)inc.ReadByte();
+                            string reason = inc.ReadString();
+                            Console.WriteLine("New status: " + status + " (" + reason + ")");
+
+                            if (status == NetConnectionStatus.Connected)
+                            {
+                                mCanStart = true;
+                            }
+                            else if (status == NetConnectionStatus.Disconnected)
+                            {
+                                IsRunning = false;
+                                return;
+                            }
+                            break;
+                        case NetIncomingMessageType.Data:
+                            {
+                                String tmp = inc.ReadString();
+                                if (tmp == "echo")
+                                {
+                                    Console.Write("Echo Recieved");
+                                    SendQuit();
+                                }
+                                else if (tmp == "quit")
+                                {
+                                    IsRunning = false;
+                                    return;
+                                }
+                                /*if (inc.ReadByte() == (byte)PacketTypes.WORLDSTATE)
+                                {
+                                    Console.WriteLine("World State uppaus");
+                                    GameStateList.Clear();
+                                    int jii = 0;
+                                    jii = inc.ReadInt32();
+                                    for (int i = 0; i < jii; i++)
+                                    {
+                                        Character ch = new Character();
+                                        inc.ReadAllProperties(ch);
+                                        GameStateList.Add(ch);
+                                    }
+                                }*/
+                            }
+                            break;
+                    }
+                    mClient.Recycle(inc);
+                }
+            }
+
+            public void SendEcho()
+            {
+                // Create new message
+                NetOutgoingMessage outmsg = mClient.CreateMessage();
+
+                // Write byte = Set "MOVE" as packet type
+                outmsg.Write("echo");
+
+                // Send it to server
+                mClient.SendMessage(outmsg, NetDeliveryMethod.ReliableOrdered);
+            }
+
+            public void SendQuit()
+            {
+                NetOutgoingMessage outmsg = mClient.CreateMessage();
+
+                // Write byte = Set "MOVE" as packet type
+                outmsg.Write("quit");
+
+                // Send it to server
+                mClient.SendMessage(outmsg, NetDeliveryMethod.ReliableOrdered);
+
+                IsRunning = false;
+            }
+
+
+        }
+
+        public class Server
+        {
+            // Server object
+            NetServer mServer;
+            // Configuration object
+            NetPeerConfiguration mConfig;
+
+            public Server()
+            {
+                mConfig = new NetPeerConfiguration(Nebulas.Network.Identifiers.Application);
+                mConfig.Port = Nebulas.Network.Identifiers.Port;
+
+                mConfig.MaximumConnections = 200;
+                mConfig.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
+                mConfig.EnableMessageType(NetIncomingMessageType.Data);
+                mServer = new NetServer(mConfig);
+                mServer.Start();
+            }
+
+<<<<<<< HEAD
+            public void Destroy()
+            {
+                mServer.Shutdown("Server is going down NOW");
+=======
+            public void Stop(String reason = "Unknown reason")
+            {
+                mServer.Shutdown(reason);
+>>>>>>> origin/master
+            }
+
+            public bool Test()
+            {
+                
+                // Object that can be used to store and read messages
+                NetIncomingMessage inc;
+                Boolean echo_rec = false;
+
+                // Write to con..
+                Console.WriteLine("Waiting for new connections and updateing world state to current ones");
+
+                // Main loop
+                // This kind of loop can't be made in XNA. In there, its basically same, but without while
+                // Or maybe it could be while(new messages)
+
+                //10 seconds
+<<<<<<< HEAD
+                DateTime end = DateTime.UtcNow.AddSeconds(90);
+                
+                while (true && (end > DateTime.UtcNow))
+=======
+                Boolean running = true;
+                while (running)
+>>>>>>> origin/master
+                {
+                    // Server.ReadMessage() Returns new messages, that have not yet been read.
+                    // If "inc" is null -> ReadMessage returned null -> Its null, so dont do this :)
+                    if ((inc = mServer.ReadMessage()) != null)
+                    {
+                        // Theres few different types of messages. To simplify this process, i left only 2 of em here
+                        Console.WriteLine(inc.MessageType.ToString());
+                        switch (inc.MessageType)
+                        {
+                            // If incoming message is Request for connection approval
+                            // This is the very first packet/message that is sent from client
+                            // Here you can do new player initialisation stuff
+                            case NetIncomingMessageType.ConnectionApproval:
+
+                                // Read the first byte of the packet
+                                // ( Enums can be casted to bytes, so it be used to make bytes human readable )
+                                if (inc.ReadByte() == (byte)PacketTypes.LOGIN)
+                                {
+                                    Console.WriteLine("Incoming LOGIN");
+
+                                    // Approve clients connection ( Its sort of agreenment. "You can be my client and i will host you" )
+                                    inc.SenderConnection.Approve();
+
+                                    // Create message, that can be written and sent
+                                    NetOutgoingMessage outmsg = mServer.CreateMessage();
+
+                                    // first we write byte
+                                    outmsg.Write("echo");
+                                    // Reliably means, that each packet arrives in same order they were sent. Its slower than unreliable, but easyest to understand
+                                    mServer.SendMessage(outmsg, inc.SenderConnection, NetDeliveryMethod.ReliableOrdered, 0);
+
+                                    // Debug
+                                    Console.WriteLine("Approved new connection and updated the world status");
+                                }
+                                else 
+                                {
+                                    inc.SenderConnection.Deny();
+                                }
+
+                                break;
+                            // Data type is all messages manually sent from client
+                            // ( Approval is automated process )
+                            case NetIncomingMessageType.Data:
+
+                                // Read first byte
+                                //if (inc.ReadByte() == (byte)PacketTypes.MOVE)
+                                String tmp = inc.ReadString();
+                                if (tmp == "quit")
+                                {
+                                    NetOutgoingMessage outmsg = mServer.CreateMessage();
+                                    outmsg.Write("quit");
+                                    mServer.SendMessage(outmsg, mServer.Connections, NetDeliveryMethod.ReliableOrdered, 0);
+                                    running = false;
+                                }
+                                else if (tmp == "echo")
+                                {
+                                    echo_rec = true;
+                                    Console.WriteLine("Sending Echo");
+                                    NetOutgoingMessage outmsg = mServer.CreateMessage();
+                                    outmsg.Write("echo");
+                                    // Send messsage to clients ( All connections, in reliable order, channel 0)
+                                    mServer.SendMessage(outmsg, mServer.Connections, NetDeliveryMethod.ReliableOrdered, 0);
+                                }
+                                break;
+                            case NetIncomingMessageType.StatusChanged:
+                                // In case status changed
+                                // It can be one of these
+                                // NetConnectionStatus.Connected;
+                                // NetConnectionStatus.Connecting;
+                                // NetConnectionStatus.Disconnected;
+                                // NetConnectionStatus.Disconnecting;
+                                // NetConnectionStatus.None;
+
+                                // NOTE: Disconnecting and Disconnected are not instant unless client is shutdown with disconnect()
+                                Console.WriteLine(inc.SenderConnection.ToString() + " status changed. " + (NetConnectionStatus)inc.SenderConnection.Status);
+                                if(inc.SenderConnection.Status == NetConnectionStatus.RespondedAwaitingApproval)
+                                {
+                                    inc.SenderConnection.Approve();
+                                    NetOutgoingMessage msg = mServer.CreateMessage();
+                                    msg.Write("Connection Accepted");
+                                    inc.SenderConnection.SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 0);
+                                }
+                                else if (inc.SenderConnection.Status == NetConnectionStatus.Disconnected || inc.SenderConnection.Status == NetConnectionStatus.Disconnecting)
+                                {
+                                    inc.SenderConnection.Disconnect("Goodbye");
+                                    return true;
+                                }
+                                break;
+                            default:
+                                
+                                Console.WriteLine("Unhandled Message");
+                                break;
+                        }
+                        mServer.Recycle(inc);
+                    } 
+                    System.Threading.Thread.Yield();
+                }
+<<<<<<< HEAD
+                return false;
+=======
+                Stop("Test End");
+                return echo_rec;
+>>>>>>> origin/master
+            }
+        }
+    }
+}
+

@@ -57,6 +57,7 @@ namespace Nebulas
         class Galaxy
         {
             Sector[] mSectors;
+            Int32[][] mBackground;
         }
     }
 }
