@@ -168,8 +168,14 @@ void Galaxy::DrawStar(unsigned int* buffer, unsigned long cx, unsigned long cy, 
 	{
 		for (long x = -length; x < length; ++x)
 		{
-			distance = pow(y,2) + pow(x, 2);
-			if (((distance < interior) && (distance < hyp)) || ((x == 0) && (y == 0)))
+			//Determine radial distance from any corner
+			double corner_dist = pow((length/2) - abs(x),2) + pow((length/2) - abs(y), 2);
+			distance = pow(x, 2) + pow(y, 2);
+
+
+
+			
+			if ((distance < interior) || ((x == 0) && (y == 0)))
 			{
 				color = CoreTemperatureToColor(temperature).values.intValue;
 			}
