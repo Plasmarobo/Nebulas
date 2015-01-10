@@ -1,11 +1,13 @@
 #include "Galaxy.h"
+extern "C"
+{
 #include <png.h>
 #include <pngconf.h>
-#include <pnglibconf.h>
+}
 #include <fstream>
 #include <ctime>
 #include <math.h>
-
+#include <algorithm>
 #include <direct.h>
 
 Galaxy::Galaxy()
@@ -13,9 +15,9 @@ Galaxy::Galaxy()
 	mWidth = 2000;
 	mHeight = 2000;
 
-	mAverageStellarDensity = 0.5;
+	mAverageStellarDensity = 0.1;
 	mAverageStellarTemperature = 0.5;
-	mAverageStellarRadius = 0.5;
+	mAverageStellarRadius = 4.0;
 
 	mBaseSeed = time(0);
 	mLayerScale = 4;
@@ -37,14 +39,14 @@ void Galaxy::ParseSettings(int argc, char* arguments[])
 	int iter = 0;
 	while (iter < argc)
 	{
-		if (strcmp(arguments[iter], "-w"))
+		if (strcmp(arguments[iter], "-w") == 0)
 		{
 			mWidth = atol(arguments[++iter]);
 		}
-		else if (strcmp(arguments[iter], "-h")) {
+		else if (strcmp(arguments[iter], "-h") == 0) {
 			mHeight = atol(arguments[++iter]);
 		}
-		else if (strcmp(arguments[iter], "-s")) {
+		else if (strcmp(arguments[iter], "-s") == 0) {
 			mBaseSeed = atol(arguments[++iter]);
 			delete mRandomDistribution;
 			delete mTwister;
@@ -52,28 +54,23 @@ void Galaxy::ParseSettings(int argc, char* arguments[])
 			mTwister->seed(mBaseSeed);
 			mRandomDistribution = new std::uniform_real_distribution<double>(0, std::nextafter(1, DBL_MAX));
 		}
-		else if (strcmp(arguments[iter], "-l")) {
+		else if (strcmp(arguments[iter], "-l") == 0) {
 			mLayerCount = atol(arguments[++iter]);
 		}
-		else if (strcmp(arguments[iter], "-c")) {
+		else if (strcmp(arguments[iter], "-c") == 0) {
 			mLayerCount = atol(arguments[++iter]);
 		}
-		else if (strcmp(arguments[iter], "-r")) {
+		else if (strcmp(arguments[iter], "-r") == 0) {
 			mAverageStellarRadius = atof(arguments[++iter]);
 		}
-		else if (strcmp(arguments[iter], "-d")) {
+		else if (strcmp(arguments[iter], "-d") == 0) {
 			mAverageStellarDensity = atof(arguments[++iter]);
 		}
-		else if (strcmp(arguments[iter], "-t")) {
+		else if (strcmp(arguments[iter], "-t") == 0) {
 			mAverageStellarTemperature = atof(arguments[++iter]);
 		}
 		++iter;
 	}
-}
-
-unsigned int* Galaxy::GenerateLayer(int z)
-{
-	
 }
 
 bool Galaxy::CreateDirectoryTree()
@@ -81,7 +78,7 @@ bool Galaxy::CreateDirectoryTree()
 	char dir[128];
 	for (int i = 0; i < mLayerCount; ++i)
 	{
-		sprintf(dir, "layer_%03d", i);
+		sprintf_s(dir, "layer_%03d", i);
 		if (_mkdir(dir) == ENOENT)
 		{
 			return false;
@@ -93,14 +90,15 @@ bool Galaxy::CreateDirectoryTree()
 void Galaxy::ExportPng(unsigned int* data, int z, int slice)
 {
 	char slice_name[128];
-	sprintf(slice_name, "slice%06d", slice);
+	sprintf_s(slice_name, "slice%06d", slice);
 	char path[256];
-	sprintf(path, "layer_%03d/slice_%s.png", z, slice_name);
+	sprintf_s(path, "layer_%03d/slice_%s.png", z, slice_name);
+	fprintf(stdout, "Exported to %s\n", path);
 	FILE *fp;
 	png_structp png_ptr;
 	png_infop info_ptr;
 	png_bytep row;
-	fp = fopen(path, "wb");
+	fopen_s(&fp, path, "wb");
 	if (fp == NULL)
 	{
 		fprintf(stderr, "Could not open %s for writing\n", path);
@@ -120,13 +118,14 @@ void Galaxy::ExportPng(unsigned int* data, int z, int slice)
 	}
 	png_init_io(png_ptr, fp);
 
-	png_set_IHDR(png_ptr, info_ptr, mWidth, mHeight, 8, PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-
-	png_text title_text;
-	title_text.compression = PNG_TEXT_COMPRESSION_NONE;
-	title_text.key = "Title";
-	title_text.text = slice_name;
-	png_set_text(png_ptr, info_ptr, &title_text, 1);
+	png_set_IHDR(png_ptr, 
+		info_ptr, 
+		mWidth, mHeight, 
+		8, 
+		PNG_COLOR_TYPE_RGBA, 
+		PNG_INTERLACE_NONE, 
+		PNG_COMPRESSION_TYPE_DEFAULT, 
+		PNG_FILTER_TYPE_DEFAULT);
 
 	png_write_info(png_ptr, info_ptr);
 
@@ -135,7 +134,7 @@ void Galaxy::ExportPng(unsigned int* data, int z, int slice)
 	{
 		for (int x = 0; x < mWidth; x++)
 		{
-			memcpy(&(row[x*4]), &(data[y*mHeight + x]), 4);			
+			memcpy(&(row[x*4]), &(data[(mWidth * mHeight * slice)+(y*mWidth) + x]), 4);			
 		}
 		png_write_row(png_ptr, row);
 	}
@@ -149,6 +148,7 @@ void Galaxy::ExportPng(unsigned int* data, int z, int slice)
 
 void Galaxy::Generate()
 {
+	CreateDirectoryTree();
 	for (int z = 0; z < mLayerCount; ++z)
 	{
 		GenerateLayer(z);
@@ -157,66 +157,43 @@ void Galaxy::Generate()
 
 void Galaxy::DrawStar(unsigned int* buffer, unsigned long cx, unsigned long cy, unsigned long w, unsigned long h, double radius, double temperature)
 {
-	double maxHyp = radius * radius;
-	double hyp = 0.0;
-	for (double y = floor((double) -radius); y < ceil((double) radius); y += 1.0)
+	unsigned long interior = floor(radius * 0.6);
+	long length = ceil(radius);
+	unsigned long hyp = pow(radius, 2);
+	unsigned long distance = 0;
+	unsigned long x = 0;
+	unsigned long y = 0;
+	unsigned int color = 0x00000000;
+	for (long y = -length; y < length; ++y)
 	{
-		for (double x = floor((double) -radius); x < ceil((double) radius); x += 1.0)
+		for (long x = -length; x < length; ++x)
 		{
-			unsigned int color = 0xFF000000;
-			int xi = 0;
-			int yi = 0;
-			if (((cy+y) >= 0) && ((cx+x) >= 0) && ((cx+x) < w) && ((cy+y) < h))
+			distance = pow(y,2) + pow(x, 2);
+			if (((distance < interior) && (distance < hyp)) || ((x == 0) && (y == 0)))
 			{
-				double hyp = (x*x) + (y*y);
-				if (x < 0)
+				color = CoreTemperatureToColor(temperature).values.intValue;
+			}
+			else
+			{
+				double magnitude = pow((double)x/(double)length,2.0) + pow((double)y/(double)length,2.0);
+				if (magnitude > 1)
 				{
-					xi = floor(x);
+					color = 0x00000000;
 				}
-				else if (x > 0)
+				else
 				{
-					xi = ceil(x);
-				}
-				if (y < 0)
-				{
-					yi = floor(y);
-				}
-				else if (y > 0)
-				{
-					yi = ceil(y);
-				}
-				if (hyp < maxHyp)
-				{
-					if (hyp > (0.9 * maxHyp))
-					{
-						//Corona
-						color = CoronaTemperatureToColor(temperature).values.intValue;
-					}
-					else if (hyp > (0.7 * maxHyp))
-					{
-						//Falloff
-						//Max : 0.7
-						//Min : 0.9
-						double scalar = 0.1*(1 - (hyp - 0.7));
-						color = ScaleColor(CoreTemperatureToColor(temperature), scalar).values.intValue;
-					}
-					else
-					{
-						//Core
-						color = CoreTemperatureToColor(temperature).values.intValue;
-					}
+					Color corona = CoreTemperatureToColor(temperature);
+					corona.values.argbValues.a = 255.0 * (1.0 - magnitude);
+					color = corona.values.intValue;
 				}
 			}
-			buffer[(cy + yi)*h + (cx + xi)] = color;
+			
+			if (((cy + y) < h) && ((cy + y) > 0) && ((cx + x) < w) && ((cx + x) > 0) && (color != 0x00000000))
+			{
+				buffer[((cy + y) * w) + (cx + x)] = color;
+			}
 		}
 	}
-}
-
-void Galaxy::DrawNebula(unsigned int* buffer, unsigned long cx, unsigned long cy, unsigned long w, unsigned long h, double temperature)
-{
-	float d = sqrt(dx * dx + dy * dy);
-	pixel = gradient - (int) (d / radius * gradient);
-	new_alpha = old_alpha + the gradient formula
 }
 
 Color Galaxy::CoreTemperatureToColor(double temperature)
@@ -259,10 +236,14 @@ double Galaxy::Random()
 
 void Galaxy::GenerateLayer(int z)
 {
-	int length = sqrt((4 ^ z)); //1, 4, 16, 64
+	int length = sqrt((pow(4, z))); //1, 4, 16, 64
 	unsigned long layerW = mWidth * length;
 	unsigned long layerH = mHeight * length;
-	unsigned int* buffer = new unsigned int(layerW * layerH);
+	unsigned int* buffer = new unsigned int[layerW * layerH];
+	for (unsigned long k = 0; k < (layerW * layerH); ++k)
+	{
+		buffer[k] = 0x00000000;
+	}
 	double density = 0;
 	double starCount = 0;
 	unsigned long x = 0;
@@ -284,8 +265,8 @@ void Galaxy::GenerateLayer(int z)
 		for (int x = 0; x < length; ++x)
 		{
 			unsigned long index = (y * length) + x;
-			unsigned long offset = (mWidth * mHeight) * ((layerH * y) + x);
-			ExportPng(&(buffer[offset]), z, index);
+			ExportPng(buffer, z, index);
 		}
 	}
+	delete [] buffer;
 }

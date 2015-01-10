@@ -1,6 +1,7 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,7 +21,7 @@ namespace Nebulas
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Dictionary<String, Texture2D> sprites;
+        static Dictionary<String, Texture2D> sprites = new Dictionary<string,Texture2D>();
         Scene scene;
         Menu connectionMenu;
         Boolean connected;
@@ -60,7 +61,22 @@ namespace Nebulas
             spriteBatch = new SpriteBatch(GraphicsDevice);
             
             // TODO: use this.Content to load your game content here
-            sprites["rocket"] = this.Content.Load<Texture2D>("TerranRocket");
+            //sprites["rocket"] = this.Content.Load<Texture2D>("TerranRocket");
+
+            //Load SectorA
+            string dirRoot = @"sectorA";
+            List<string> dirs = new List<string>(Directory.EnumerateDirectories(dirRoot));
+            foreach (var dir in dirs)
+            {
+                List<string> files = new List<string>(Directory.EnumerateFiles(dir));
+                foreach (var file in files)
+                {
+                    string name = Path.GetFileNameWithoutExtension(file);
+                    string slice = Path.GetDirectoryName(dir);
+                    sprites["{dirRoot}{slice}{name}"] = this.Content.Load<Texture2D>(file);
+                }
+                
+            }
         }
 
         /// <summary>

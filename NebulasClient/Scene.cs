@@ -16,6 +16,23 @@ namespace Nebulas
         Rectangle mViewport;
 
     }
+
+    public class Background : Nebulas.Events.EventListener
+    {
+        protected List<Texture2D[]> mImages; 
+        protected Int32 mWidth;
+        protected Int32 mHeight;
+        protected Int32 mOffsetX;
+        protected Int32 mOffsetY;
+
+        public void LoadFolder(String source)
+        {
+
+        }
+        public void Draw(SpriteBatch spriteBatch, GameTime gameTime);
+
+
+    }
     public class Scene : Nebulas.Events.EventListener
     {
         

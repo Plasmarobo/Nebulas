@@ -1,9 +1,11 @@
-#ifndef GALAXY_H
-#define GALAXY_H
+#ifndef GALAXYGEN_H
+#define GALAXYGEN_H
 
 #include <random>
 
+#define ZLIB_WINAPI
 #define BIGENDIAN
+
 struct Color
 {
 	union {
@@ -47,7 +49,7 @@ enum Colors {
 	COLOR_COUNT
 };
 
-Color gradientColors[] =
+const Color gradientColors[] =
 {
 	Color(0x805B1D8A), 
 	Color(0x80DB46CF),
@@ -59,7 +61,7 @@ Color gradientColors[] =
 	Color(0x801625F5)
 };
 
-Color coreColors[] =
+const Color coronaColors[] =
 {
 	Color(0xFFF7B4AB),
 	Color(0xFFF7F3BC),
@@ -68,7 +70,7 @@ Color coreColors[] =
 	Color(0xFFFFFECC)
 };
 
-Color coronaColors[] =
+const Color coreColors[] =
 {
 	Color(0xFFFF5029),
 	Color(0xFFFFFFFF),
@@ -91,6 +93,11 @@ public:
 	Color GradientFunction(unsigned long x, unsigned long y);
 	void AddRandomColor();
 	void Draw();
+	/*
+	float d = sqrt(dx * dx + dy * dy);
+	pixel = gradient - (int) (d / radius * gradient);
+	new_alpha = old_alpha + the gradient formula
+	*/
 	void RecurseFractals(unsigned long x, unsigned long y, double radius);
 
 
@@ -117,7 +124,9 @@ protected:
 public:
 
 	Galaxy();
+	~Galaxy();
     void GenerateLayer(int z);
+	void ParseSettings(int argc, char* arguments []);
 	bool CreateDirectoryTree();
 	void ExportPng(unsigned int* data, int z, int slice);
 	void Generate();
