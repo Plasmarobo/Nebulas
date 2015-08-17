@@ -60,9 +60,9 @@ namespace Nebulas
         
         static Color mSelected = Color.Yellow;
 
-        public Menu()
+        public Menu(SpriteFont font)
         {
-            mFont = ?;
+            mFont = font;
             mChoices = new String[4];
             mOffset = 0;
             this.AddResponse("KEY_UP", "moveMenu.rb");

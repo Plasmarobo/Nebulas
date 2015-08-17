@@ -264,6 +264,7 @@ namespace Nebulas
                 // Object that can be used to store and read messages
                 NetIncomingMessage inc;
                 Boolean echo_rec = false;
+                Boolean running = true;
 
                 // Write to con..
                 Console.WriteLine("Waiting for new connections and updateing world state to current ones");
@@ -275,7 +276,7 @@ namespace Nebulas
                 //10 seconds
                 DateTime end = DateTime.UtcNow.AddSeconds(90);
 
-                while (true && (end > DateTime.UtcNow))
+                while (running && (end > DateTime.UtcNow))
                 {
                     // Server.ReadMessage() Returns new messages, that have not yet been read.
                     // If "inc" is null -> ReadMessage returned null -> Its null, so dont do this :)
@@ -373,7 +374,7 @@ namespace Nebulas
                     } 
                     System.Threading.Thread.Yield();
                 }
-                return false;
+                //return false;
                 return echo_rec;
             }
         }

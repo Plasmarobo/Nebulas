@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.GamerServices;
-
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -21,7 +21,9 @@ namespace Nebulas
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        static Dictionary<String, String> settings = new Dictionary<string, string>();
         static Dictionary<String, Texture2D> sprites = new Dictionary<string,Texture2D>();
+        static Dictionary<String, SpriteFont> fonts = new Dictionary<string, SpriteFont>();
         Scene scene;
         Menu connectionMenu;
         Boolean connected;
@@ -29,10 +31,11 @@ namespace Nebulas
         public NebulasClient()
             : base()
         {
+            ReadConfigFile("config.txt");
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             scene = null;
-            connectionMenu = new Menu();
+            connectionMenu = new Menu(fonts[]);
             connected = false;
             eventManager = new Nebulas.Events.EventStream();
             //Basic Event manager must handle UP DOWN ENTER and Entering 0-9 and .
@@ -64,17 +67,35 @@ namespace Nebulas
             //sprites["rocket"] = this.Content.Load<Texture2D>("TerranRocket");
 
             //Load SectorA
-            string dirRoot = @"sectorA";
+            string dirRoot = @"data";
             List<string> dirs = new List<string>(Directory.EnumerateDirectories(dirRoot));
             foreach (var dir in dirs)
             {
                 List<string> files = new List<string>(Directory.EnumerateFiles(dir));
-                foreach (var file in files)
+                if (dir == "textures")
                 {
-                    string name = Path.GetFileNameWithoutExtension(file);
-                    string slice = Path.GetDirectoryName(dir);
-                    sprites["{dirRoot}{slice}{name}"] = this.Content.Load<Texture2D>(file);
+                    foreach (var file in files)
+                    {
+                        string name = Path.GetFileNameWithoutExtension(file);
+                        string slice = Path.GetDirectoryName(dir);
+                        sprites["{dirRoot}{slice}{name}"] = this.Content.Load<Texture2D>(file);
+                    }
                 }
+                else if (dir == "fonts")
+                {
+                    foreach (var file in files)
+                    {
+                        string name = Path.GetFileNameWithoutExtension(file);
+                        string slice = Path.GetDirectoryName(dir);
+                        fonts["{dirRoot}{slice}{name}"] = this.Content.Load<SpriteFont>(file);
+                    }
+                }
+                else if (dir == "scripts")
+                {
+
+                }
+                
+                
                 
             }
         }
@@ -134,6 +155,33 @@ namespace Nebulas
             base.Draw(gameTime);
         }
 
-        
+        protected void ReadConfigFile(string filename)
+        {
+            // Read KVPs
+            try
+            {
+                using (StreamReader sr = new StreamReader(filename))
+                {
+                    String line = sr.ReadToEnd();
+                    line = Regex.Replace(line, "\s", "");
+                    String[] kvp = line.Split('=');
+                    switch(kvp[0])
+                    {
+                        case "width":
+                        case "height":
+                        case "defaultFont":
+                            settings[kvp[0]] = kvp[1];
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The file could not be read:");
+                Console.WriteLine(e.Message);
+            }
+        }      
     }
 }
